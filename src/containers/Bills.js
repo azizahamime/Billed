@@ -54,16 +54,9 @@ export default class {
                 }
               }
             })
-
+          const filtredBills = bills.filter(a => a.status !== undefined)
           console.log('length', bills.length)
-          console.log(bills.filter(a => a.status !== undefined))
-
-          /*const displayBills = bills.filter(bill => bill.status !== undefined).sort((a, b) => (b.date > a.date) ? 1 : -1)
-          console.log(bills.map(a => console.log(a.date)))
-          console.log("**********************************")
-          console.log(displayBills.map(a => console.log(a.date)))*/
-
-          return bills.filter(a => a.status !== undefined)
+          return filtredBills
 
 
         })
