@@ -10,9 +10,9 @@ import { bills } from "../fixtures/bills.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
-
 import router from "../app/Router.js";
 import userEvent from "@testing-library/user-event";
+
 jest.mock("../app/Store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
@@ -47,19 +47,23 @@ describe("Given I am connected as an employee", () => {
   // tester si on click sur le bouton "nouvelle note de frais" => page newBills
   describe("When I click on new-bill button", () => {
     test('Then, I should be sent to NewBill page', () => {
+      //document.body.innerHTML = BillsUI({ data: [bills] })
 
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
+
       const bill = new Bills({
         document, onNavigate, mockStore, localStorage: window.localStorage
       })
-      const buttonNewBill = screen.getByTestId("btn-new-bill")
-      const handleClickNewBill = jest.fn(() => {
-        bill.handleClickNewBill()
+
+      const btnNewBill = screen.getByTestId("btn-new-bill")
+
+      const handleClickNewBill = jest.fn((e) => {
+        bill.handleClickNewBill(e)
       })
-      buttonNewBill.addEventListener("click", handleClickNewBill)
-      userEvent.click(buttonNewBill)
+      btnNewBill.addEventListener("click", handleClickNewBill)
+      userEvent.click(btnNewBill)
       expect(handleClickNewBill).toHaveBeenCalled()
       const newBillPage = screen.getByTestId('form-new-bill')
       expect(newBillPage).toBeTruthy()
@@ -69,20 +73,32 @@ describe("Given I am connected as an employee", () => {
   // tester quand je click sur l'icon eye ça nous ouvre une modale
   describe("when i click on eye icon", () => {
     test("A modal should open", () => {
-      const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES(pathname)
-      }
-      const bill = new Bills(() => {
-        document, onNavigate, mockStore, localStorage = window.localStorage
-      })
 
-      const icon = screen.getAllByTestId("icon-eye")[0]
-      const handleClickIconEye = jest.fn(bill.handleClickIconEye(icon))
-      icon.addEventListener("click", handleClickIconEye)
-      userEvent.click(icon)
-      expect(handleClickIconEye).toHaveBeenCalled()
-      const modale = screen.getByTestId('modaleFile')
-      expect(modale).toBeTruthy()
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
+      document.body.innerHTML = BillsUI({ data: bills });
+      $.fn.modal = jest.fn();
+
+      const mockedBills = new Bills({
+        document,
+        onNavigate,
+        mockStore,
+        localStorage: window.localStorage,
+      });
+
+      const iconEye = screen.getAllByTestId("icon-eye")[0];
+      const handleClickIconEye = jest.fn(mockedBills.handleClickIconEye(iconEye));
+
+      iconEye.addEventListener("click", handleClickIconEye);
+      userEvent.click(iconEye);
+
+      expect(handleClickIconEye).toHaveBeenCalled;
+
+      const modal = document.getElementById("modaleFile");
+      expect(modal).toBeTruthy();
+
     })
   })
 
